@@ -53,6 +53,9 @@ body{
   color:var(--line);font-family:var(--body);font-weight:600;overflow:hidden;
 }
 #app{display:grid;grid-template-rows:auto 1fr auto auto;grid-template-columns:minmax(0,1fr) auto;height:100%;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+/* Wide windows (laptop, or the ClassIn student frame) get a fixed 1280x800 stage scaled to fit,
+   so the layout never stretches or pushes the cards off the bottom. Portrait phones keep the responsive layout. */
+html.fit #app{position:absolute;left:50%;top:50%;width:1280px;height:800px;transform:translate(-50%,-50%) scale(var(--fit,1));transform-origin:center center}
 
 /* header = drawing title block */
 header{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-block:12px}
@@ -1284,6 +1287,15 @@ $('#pPool').addEventListener('click', tap(e => { const s = e.target.closest('.st
 $('#cCard').addEventListener('click', tap(() => fireClap()));
 $('#wChoices').addEventListener('click', tap(e => { const b = e.target.closest('.choice'); if (b) { b.blur(); G.onChip?.(b.dataset.w); } }));
 $('#sCats').addEventListener('click', tap(e => { const b = e.target.closest('.choice'); if (b) { b.blur(); G.onCat?.(b.dataset.c); } }));
+
+// Fit the stage to whatever window the game is in (the ClassIn student frame can be a different size).
+function fitStage(){
+  const wide = innerWidth / innerHeight >= 1.2 && innerWidth > 760;
+  document.documentElement.classList.toggle('fit', wide);
+  document.documentElement.style.setProperty('--fit', Math.min(innerWidth / 1280, innerHeight / 800));
+}
+addEventListener('resize', fitStage);
+fitStage();
 </script>
 </body>
 </html>
