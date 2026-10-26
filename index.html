@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;800;900&family=Patrick+Hand&display=swap" rel="stylesheet">
 <style>
-/* Layout: one blueprint sheet — header title block, play area, the growing city skyline, and a listening strip */
+/* Layout: one blueprint sheet — header title block, play area, the growing city skyline, and a footer with the teacher buttons */
 :root{
   --paper:#0f3b73; --paper-deep:#0a2a55; --grid:rgba(160,205,255,.10); --grid-strong:rgba(160,205,255,.22);
   --line:#eaf4ff; --chalk:#9fc6f2; --sun:#ffd23f; --mint:#5fe0a8; --coral:#ff7a66;
@@ -52,7 +52,7 @@ html{
 body{
   color:var(--line);font-family:var(--body);font-weight:600;overflow:hidden;
 }
-#app{display:grid;grid-template-rows:auto 1fr auto auto;grid-template-columns:minmax(0,1fr) auto;height:100%;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+#app{display:grid;grid-template-rows:auto 1fr auto auto;grid-template-columns:auto minmax(0,1fr);height:100%;padding-left:env(safe-area-inset-left,0px);padding-right:max(16px,env(safe-area-inset-right,0px))}
 /* Wide windows (laptop, or the ClassIn student frame) get a fixed 1280x800 stage scaled to fit,
    so the layout never stretches or pushes the cards off the bottom. Portrait phones keep the responsive layout. */
 html.fit #app{position:absolute;left:50%;top:50%;width:1280px;height:800px;transform:translate(-50%,-50%) scale(var(--fit,1));transform-origin:center center}
@@ -66,11 +66,12 @@ header{display:flex;align-items:center;justify-content:space-between;gap:16px;fl
 .right{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
 .stars{font-family:var(--display);font-weight:700;font-size:26px;color:var(--sun);min-width:3.2em;text-align:right;font-variant-numeric:tabular-nums}
 .stars.bump{animation:bump .5s}
-/* the game's own column of round buttons on the right */
-header,main,.city,footer{grid-column:1}
-.tools{grid-column:2;grid-row:1 / span 4;display:flex;flex-direction:column;align-items:center;gap:14px;width:104px;padding:14px 8px;background:rgba(10,42,85,.15)}
+/* the game's own column of round buttons on the left, flush with the screen edge; the logo sits above it */
+header{grid-column:1 / -1;grid-row:1;padding-left:16px}
+main,.city,footer{grid-column:2}
+.tools{grid-column:1;grid-row:2 / span 3;display:flex;flex-direction:column;align-items:flex-start;gap:14px;width:104px;padding:14px 0}
 .tools .stars{min-width:0;text-align:center}
-.tool-list{display:flex;flex-direction:column;align-items:center;gap:14px;margin:auto 0}
+.tool-list{display:flex;flex-direction:column;align-items:flex-start;gap:14px;margin:auto 0}
 .tool{width:60px;height:60px;border-radius:50%;padding:0;display:grid;place-items:center;font-size:26px;line-height:1;color:var(--line);background:rgba(10,42,85,.6);border:2px solid var(--chalk);cursor:pointer}
 .tool:hover{border-color:var(--sun);color:var(--sun)}
 .tool:active{transform:scale(.93)}
@@ -111,6 +112,14 @@ main{position:relative;display:grid;place-items:center;min-height:0;padding-bloc
 .srow span{display:block;font-size:16px;color:var(--chalk)}
 .srow input[type=range]{width:200px;accent-color:var(--sun)}
 .srow.end{justify-content:flex-end;border-top:0}
+/* success screen after each game: stats and the three buttons */
+.endstats{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:6px}
+.stat{min-width:170px;padding:12px 20px;border:2px solid var(--chalk);border-radius:18px;background:rgba(10,42,85,.6)}
+.stat b{display:block;font-family:var(--display);font-weight:700;font-size:clamp(40px,5vw,60px);line-height:1.05;color:var(--sun)}
+.stat span{font-size:18px;color:var(--chalk)}
+.endbtns{display:flex;gap:16px;justify-content:center;align-items:center;flex-wrap:wrap;margin-top:10px}
+/* the three success buttons share one style; only the colour differs (blue = again / home, orange = next) */
+.endbtns button{display:flex;align-items:center;justify-content:center;font-size:clamp(20px,2.2vw,28px);line-height:1.1;text-shadow:0 2px 0 rgba(6,40,90,.5);padding:0 24px;min-width:200px;height:84px;margin:0;animation:none;border-width:24px;border-image-width:24px}
 .switch{flex:none;position:relative;width:66px;height:36px;padding:0;border:2px solid var(--chalk);border-radius:99px;background:rgba(10,42,85,.6);cursor:pointer}
 .switch i{position:absolute;top:4px;left:4px;width:24px;height:24px;border-radius:50%;background:var(--chalk);transition:transform .2s}
 .switch[aria-checked="true"]{background:var(--mint);border-color:var(--mint)}
@@ -121,8 +130,8 @@ main{position:relative;display:grid;place-items:center;min-height:0;padding-bloc
 .rulesbtn:hover{border-color:var(--sun);color:var(--sun)}
 .rulesbtn:active{transform:scale(.96)}
 .rulesbtn:focus-visible{outline:3px solid var(--sun)}
-/* show only what the chosen mode needs */
-body:not(.mode-voice) .voice-only,body:not(.mode-teacher) .teacher-only,body:not(.asking) .tbtns{display:none!important}
+/* the teacher buttons only show on the screens that ask a question */
+body:not(.asking) .tbtns{display:none!important}
 .chip,.step,.pcard{cursor:pointer}
 button.go{border:0;cursor:pointer}
 button.go:focus-visible{outline:4px solid var(--line)}
@@ -163,8 +172,6 @@ kbd{font-family:var(--body);font-weight:900;border:2px solid currentColor;border
 /* hint: the word appears upside down and disappears after 3 seconds */
 .peek{display:inline-block;transform:rotate(180deg);animation:peek 3s linear forwards}
 @keyframes peek{0%,98%{opacity:1}100%{opacity:0}}
-.say{font-size:20px;color:var(--chalk)}
-.say b{color:var(--line)}
 .fb{font-family:var(--display);font-weight:600;font-size:clamp(22px,2.4vw,32px);min-height:1.3em;text-align:center}
 .fb.good{color:var(--mint)} .fb.oops{color:var(--coral)} .fb.note{color:var(--sun)}
 
@@ -180,13 +187,13 @@ kbd{font-family:var(--body);font-weight:900;border:2px solid currentColor;border
 .ico.pop{animation:pop .6s cubic-bezier(.2,.9,.3,1.4)}
 @keyframes pop{from{transform:scale(.6)}}
 
-/* clap catch */
-.clapwrap{display:flex;flex-direction:column;align-items:center;gap:14px}
+/* sort the buildings: the card belt and the group buttons */
+.sortwrap{display:flex;flex-direction:column;align-items:center;gap:14px}
 .target{font-size:clamp(24px,2.8vw,38px);font-weight:900;text-align:center}
 .tgt{display:inline-block;font-family:var(--display);font-weight:700;padding:2px 16px;border-radius:12px;color:var(--paper-deep);background:var(--sun)}
 .belt{position:relative;width:min(560px,100%);height:clamp(230px,40vh,380px);overflow:hidden;border-bottom:3px solid var(--chalk)}
 .belt::after{content:"";position:absolute;left:0;right:0;bottom:6px;border-bottom:3px dashed var(--grid-strong)}
-.pcard{position:absolute;inset:0 0 14px;margin:auto;width:min(300px,72%);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px;border-radius:16px;padding:10px;transition:box-shadow .2s,background .2s}
+.pcard{position:absolute;inset:8px 0 14px;margin:auto;width:min(300px,72%);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px;border-radius:16px;padding:10px;transition:box-shadow .2s,background .2s}
 .pcard .ico{height:72%;width:auto}
 .pcard .label{font-family:var(--display);font-weight:700;font-size:clamp(28px,3vw,42px)}
 .pcard.off{opacity:0}
@@ -198,8 +205,6 @@ kbd{font-family:var(--body);font-weight:900;border:2px solid currentColor;border
 @keyframes slideIn{from{transform:translateX(120%)}}
 @keyframes slideOut{to{transform:translateX(-130%)}}
 @keyframes shake{20%,60%{transform:translateX(-12px)}40%,80%{transform:translateX(12px)}}
-.timer{width:min(560px,100%);height:10px;border-radius:99px;background:var(--grid-strong);overflow:hidden}
-.timer div{height:100%;width:100%;background:var(--sun);transform-origin:left}
 .tally{display:flex;gap:10px}
 .tally i{width:22px;height:22px;border-radius:50%;border:2px solid var(--chalk);display:grid;place-items:center;font-style:normal;font-size:14px;font-weight:900}
 .tally i.hit{background:var(--mint);border-color:var(--mint);color:var(--paper-deep)}
@@ -212,8 +217,10 @@ kbd{font-family:var(--body);font-weight:900;border:2px solid currentColor;border
 .prompt{font-size:clamp(24px,2.8vw,38px);font-weight:900;text-align:center;margin:0}
 .prompt b{color:var(--sun)}
 .pool{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
-.step{border:2px dashed var(--chalk);border-radius:12px;padding:14px 18px;font-size:clamp(18px,1.9vw,26px);font-weight:800;min-height:88px;display:flex;align-items:center;transition:transform .25s,background .25s,border-color .25s,box-shadow .25s}
-.step.spot{border:3px solid var(--sun);background:rgba(255,210,63,.16);transform:scale(1.05);box-shadow:0 0 0 7px rgba(255,210,63,.18)}
+.step{border:2px dashed var(--chalk);border-radius:12px;padding:14px 18px;font-size:clamp(18px,1.9vw,26px);font-weight:800;min-height:88px;display:flex;align-items:center;cursor:grab;touch-action:none;user-select:none;transition:transform .25s,background .25s,border-color .25s,box-shadow .25s}
+.step.dragging{opacity:.35}
+.drag-ghost{position:fixed;z-index:50;margin:0;pointer-events:none;transform:translate(-50%,-50%) rotate(-3deg);box-shadow:0 12px 24px rgba(6,24,50,.45);cursor:grabbing}
+.slot.over{border-color:var(--sun);background:rgba(255,210,63,.16)}
 .step.nope{animation:shake .45s;border-color:var(--coral)}
 .step.placed{visibility:hidden}
 .track{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;list-style:none;margin:0;padding:0}
@@ -225,6 +232,7 @@ kbd{font-family:var(--body);font-weight:900;border:2px solid currentColor;border
 
 /* city */
 .city{height:clamp(100px,19vh,180px);border-top:0}
+body.no-city .city{display:none}
 .city svg{width:100%;height:100%;display:block}
 .city .ground{stroke:var(--line);stroke-width:3}
 .city .dim{stroke:var(--chalk);stroke-width:1.2}
@@ -232,25 +240,12 @@ kbd{font-family:var(--body);font-weight:900;border:2px solid currentColor;border
 .rise{transform-box:fill-box;transform-origin:50% 100%;animation:grow 1s cubic-bezier(.2,.9,.3,1.25) both}
 @keyframes grow{from{transform:scaleY(0)}}
 
-/* listening strip */
-.listen{display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding-block:10px;font-size:16px}
+/* the Next button under a correct answer: a slimmer version of the green button */
+#wNext,#sNext{align-self:center;border-width:18px;border-image-width:18px;padding:0 14px;margin-top:0;font-size:clamp(18px,1.9vw,26px)}
+/* footer: the teacher buttons */
+.foot{display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding-block:10px;font-size:16px}
 .settings{max-height:92vh;overflow:auto}
 .keyh{font-family:var(--display);font-weight:600;font-size:24px;margin:18px 0 8px}
-.ear{display:flex;align-items:center;gap:8px;font-weight:800;min-width:11em}
-.ear .dot{width:14px;height:14px;border-radius:50%;background:var(--chalk);opacity:.5}
-.ear.on .dot{background:var(--mint);opacity:1;animation:breathe 1.4s infinite}
-.ear.talk .dot{background:var(--sun);opacity:1}
-.ear.bad .dot{background:var(--coral);opacity:1}
-.heard{flex:1;min-width:0;color:var(--chalk);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.heard span{color:var(--line);font-weight:800}
-.meter{position:relative;width:180px;height:14px;border-radius:99px;background:var(--grid-strong);overflow:visible}
-.meter .lvl{position:absolute;inset:0;border-radius:99px;background:var(--mint);transform-origin:left;transform:scaleX(0)}
-.meter .thr{position:absolute;top:-5px;bottom:-5px;width:3px;background:var(--sun);border-radius:2px}
-.meter.flash .lvl{background:var(--sun)}
-.mlabel{color:var(--chalk)}
-.clapbadge{font-family:var(--display);font-weight:700;color:var(--sun);opacity:0}
-.clapbadge.show{animation:badge .7s ease-out}
-@keyframes badge{0%{opacity:1;transform:scale(1.5)}70%{opacity:1}100%{opacity:0;transform:scale(1)}}
 .keysbtn{margin-left:auto;font:inherit;font-weight:800;color:var(--chalk);background:none;border:1.5px solid var(--grid-strong);border-radius:8px;padding:4px 10px;cursor:pointer}
 .keysbtn:focus-visible{outline:3px solid var(--sun)}
 .tbtns{display:flex;gap:6px;flex-wrap:wrap}
@@ -275,8 +270,6 @@ body.paused header{position:relative;z-index:19}
 .pausebox .box{text-align:center;background:var(--paper);border:3px solid var(--sun);border-radius:18px;padding:28px 44px}
 .pausebox h2{font-family:var(--display);font-weight:700;font-size:clamp(48px,6vw,80px);margin:0;color:var(--sun)}
 .pausebox p{font-size:22px;margin:8px 0 0}
-.toast{position:fixed;top:80px;left:50%;transform:translateX(-50%);background:var(--sun);color:var(--paper-deep);font-weight:900;padding:8px 18px;border-radius:10px;z-index:30;transition:opacity .3s;opacity:0;pointer-events:none}
-.toast.show{opacity:1}
 .confetti{position:fixed;width:12px;height:12px;z-index:15;pointer-events:none;animation:fall 1.3s ease-out forwards}
 @keyframes fall{to{transform:translate(var(--dx),var(--dy)) rotate(540deg);opacity:0}}
 
@@ -300,29 +293,31 @@ body.paused header{position:relative;z-index:19}
 .tool[data-act=home]{background-image:url(ui-kit/icon-home.png)}
 .tool[data-act=pause]{background-image:url(ui-kit/icon-pause.png)}
 .tool[data-act=settings]{background-image:url(ui-kit/icon-settings.png)}
-.tool[data-act=rules]{background-image:url(ui-kit/icon-sound.png)}
+.tool[data-act=music]{background-image:url(ui-kit/icon-sound.png);position:relative}
+/* music muted: dim the speaker and put a slash through it */
+.tool[data-act=music].off{opacity:.5}
+.tool[data-act=music].off::after{content:"";position:absolute;left:50%;top:50%;width:76px;height:6px;margin:-3px 0 0 -38px;background:var(--sun);border-radius:3px;transform:rotate(-40deg)}
 .tool.on{background:transparent center/contain no-repeat;border:0}
 #pauseBtn.on{background-image:url(ui-kit/icon-play.png)}
 .tools .stars{width:108px;height:32px;padding:0 12px 0 36px;background:url(ui-kit/bar-star.png) center/100% 100% no-repeat;font-size:21px;line-height:32px;color:#fff;text-align:right;text-shadow:0 2px 0 rgba(6,24,50,.6)}
 /* buttons */
-.go,button.go{border:30px solid transparent;border-image:url(ui-kit/btn-green.png) 70 fill/30px;border-radius:0;background:none;padding:0 20px;line-height:1.05;color:#fff;text-shadow:0 3px 0 #1c5a2a}
-.choice,.hbtn,.tbtns button,.keysbtn,.rulesbtn{background:none;border-radius:0;border-style:solid;border-color:transparent;color:#fff;text-shadow:0 2px 0 rgba(6,40,90,.7)}
-.choice{border-width:22px;border-image:url(ui-kit/btn-blue.png) 70 fill/22px;padding:0 6px}
+.go,button.go{border:30px solid transparent;border-image:url(ui-kit/btn-orange.png) 70 fill/30px;border-radius:0;background:#fd7819;padding:0 20px;line-height:1.05;color:#fff;text-shadow:0 3px 0 #7a3a05}
+.choice,.hbtn,.tbtns button,.keysbtn,.rulesbtn{background:#23abfc;border-radius:0;border-style:solid;border-color:transparent;color:#fff;text-shadow:0 2px 0 rgba(6,40,90,.7)}
+.choice{border-width:22px;border-image:url(ui-kit/btn-blue.png) 70 fill/22px;padding:0 6px 9px}
 .hbtn,.tbtns button,.keysbtn,.rulesbtn{border-width:13px;border-image:url(ui-kit/btn-blue.png) 70 fill/13px;padding:0 6px}
 .choice:hover,.hbtn:hover,.tbtns button:hover,.keysbtn:hover,.rulesbtn:hover{color:#fff;filter:brightness(1.15)}
-.choice.right,.hbtn.on,.hbtn.green{background:none;border-image-source:url(ui-kit/btn-green.png);color:#fff}
+.choice.right,.hbtn.on,.hbtn.green{background:#63b143;border-image-source:url(ui-kit/btn-green.png);color:#fff}
 .choice.nope{filter:grayscale(.85);opacity:.55;color:#fff}
 /* word bank chips and plan steps = label plates */
-.chip,.step,.slot.filled{border:12px solid transparent;border-image:url(ui-kit/field.png) 70 fill/12px;border-radius:0;color:#17304f;text-shadow:none}
+.chip,.step,.slot.filled{border:12px solid transparent;border-image:url(ui-kit/field.png) 70 fill/12px;border-radius:0;background:#bfd3df;color:#17304f;text-shadow:none}
 .chip{padding:0 6px}
 .chip.used{color:#17304f;filter:hue-rotate(-70deg) saturate(1.8);opacity:.6}
 .step{border-width:18px;border-image-width:18px;padding:0 8px;min-height:88px}
-.step.spot{background:none;box-shadow:none;filter:drop-shadow(0 0 10px var(--sun)) brightness(1.08)}
-.step.nope{filter:hue-rotate(150deg) saturate(2.2)}
+.step.nope{filter:drop-shadow(0 0 8px var(--coral)) drop-shadow(0 0 2px var(--coral))}
 .slot.filled{background:none;padding:14px 0 0}
 .slot.filled .n{top:-24px;left:-2px}
 /* frames */
-.plate,.game{border:28px solid transparent;border-image:url(ui-kit/card.png) 110 fill/28px;border-radius:0;background:none;padding:0 4px}
+.plate,.game{border:28px solid transparent;border-image:url(ui-kit/card.png) 110 fill/28px;border-radius:0;background:#0d2d49;padding:0 4px}
 .plate{padding:18px 6px 0}
 .plate::before,.plate::after{display:none}
 .fig{top:0;left:4px}
@@ -330,9 +325,11 @@ body.paused header{position:relative;z-index:19}
 .game:hover{border-color:transparent;filter:brightness(1.12)}
 .game .gnum{background:radial-gradient(circle at 35% 30%,#4a8fd0,#1b4472);border:3px solid #9fd0f0;box-shadow:0 0 0 2px #0b1f3d;color:#fff}
 /* settings + pause dialogs */
-.help .box,.pausebox .box{position:relative;border:40px solid transparent;border-image:url(ui-kit/panel.png) 90 fill/40px;border-radius:0;background:none;padding:0 6px}
-.pausebox .box{padding:30px 40px 10px}
-.ribbon{position:absolute;top:-92px;left:50%;transform:translateX(-50%);width:min(340px,80%);height:84px;background:url(ui-kit/ribbon.png) center/100% 100% no-repeat;display:grid;place-items:center;padding-bottom:6px}
+.help .box,.pausebox .box{position:relative;border:40px solid transparent;border-image:url(ui-kit/panel.png) 90 fill/40px;border-radius:0;background:#16466a;padding:0 6px}
+.pausebox .box{padding:84px 40px 30px}
+.pausebox .ribbon{top:-40px}
+.pausebox .go{margin-top:22px}
+.ribbon{position:absolute;top:-92px;left:50%;transform:translateX(-50%);width:min(340px,80%);height:84px;background:url(ui-kit/ribbon.png) center/100% 100% no-repeat;display:grid;place-items:center;padding-bottom:34px}
 .ribbon h2,.pausebox h2{margin:0;font-size:30px;color:#fff;text-shadow:0 3px 0 #6b0f1a}
 .pausebox h2{font-size:30px}
 .help .box.settings{max-height:none;overflow:visible;margin-top:60px}
@@ -343,12 +340,6 @@ body.paused header{position:relative;z-index:19}
 input[type=range]{-webkit-appearance:none;appearance:none;height:16px;border-radius:99px;background:#0d2a4f;border:3px solid #9fc6f2;box-shadow:0 0 0 2px #0b1f3d}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#aab8c8 70%);border:3px solid #0b1f3d;box-shadow:0 3px 0 rgba(0,0,0,.3)}
 input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#aab8c8 70%);border:3px solid #0b1f3d}
-/* clap timer = clock bar; clap meter = plain bar */
-.timer{height:50px;border:solid transparent;border-width:15px 15px 15px 54px;border-image:url(ui-kit/bar-clock.png) 55 55 55 190 fill/15px 15px 15px 54px;border-radius:0;background:none;overflow:visible;padding:3px 4px}
-.timer div{background:url(ui-kit/bar-fill.png) 0 0/100% 100% no-repeat;border-radius:0}
-.meter{height:34px;border:solid transparent;border-width:10px;border-image:url(ui-kit/bar-plain.png) 60 fill/10px;border-radius:0;background:none;overflow:visible}
-.meter .lvl{background:url(ui-kit/bar-fill.png) 0 0/100% 100% no-repeat;border-radius:0}
-.meter.flash .lvl{background:url(ui-kit/bar-fill.png) 0 0/100% 100% no-repeat;filter:brightness(1.3)}
 /* tally marks */
 .tally i{width:30px;height:30px;font-size:0;border:3px solid #9fc6f2;background:#1b4472}
 .tally i.hit,.tally i.ok,.tally i.wrong{border:0;background:center/contain no-repeat}
@@ -357,10 +348,17 @@ input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;bac
 .tally i.wrong{background-image:url(ui-kit/icon-close.png)}
 
 /* tweaks: big centred score, deeper main buttons, black teacher buttons */
-.tools .stars{position:fixed;top:10px;left:0;right:0;margin:0 auto;z-index:5;width:250px;height:73px;padding:0 22px 0 84px;font-size:42px;line-height:73px}
+.tools .stars{position:fixed;top:10px;left:auto;right:20px;margin:0;z-index:5;width:250px;height:73px;padding:0 22px 0 84px;font-size:42px;line-height:73px}
+/* small ghost text under the score: clears the score and the city */
+.reset-score{position:fixed;top:88px;right:20px;z-index:5;background:none;border:0;padding:2px 6px;font:inherit;font-size:14px;color:var(--line);opacity:.5;cursor:pointer}
+.reset-score:hover{opacity:.9;text-decoration:underline}
+.reset-score:focus-visible{outline:2px solid var(--sun)}
 .choice,.hbtn{border-image-source:url(ui-kit/btn-blue-deep.png)}
 .choice.right,.hbtn.on,.hbtn.green{border-image-source:url(ui-kit/btn-green-deep.png)}
-.go,button.go{border-image-source:url(ui-kit/btn-green-deep.png)}
+.hbtn.proceed{border-image-source:url(ui-kit/btn-orange.png)}
+.go,button.go{border-image-source:url(ui-kit/btn-orange.png)}
+/* the backing colour fills only inside the frame, so no square corners show outside the rounded art */
+.go,button.go,.choice,.choice.right,.hbtn,.hbtn.on,.hbtn.green,.tbtns button,.plate,.game,.help .box,.pausebox .box,.chip,.step{background-clip:padding-box}
 .tbtns{margin:0 auto}
 .tbtns button{border-image-source:url(ui-kit/btn-black.png)}
 </style>
@@ -372,11 +370,12 @@ input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;bac
   </header>
   <nav class="tools" aria-label="Game buttons">
     <div class="stars" id="stars">0</div>
+    <button class="reset-score" type="button" id="resetScore">Reset score</button>
     <div class="tool-list">
       <button class="tool" type="button" data-act="home" title="Home" aria-label="Home"></button>
       <button class="tool" type="button" data-act="pause" id="pauseBtn" title="Pause" aria-label="Pause"></button>
       <button class="tool" type="button" data-act="settings" title="Settings" aria-label="Settings"></button>
-      <button class="tool" type="button" data-act="rules" title="Listen to the rules" aria-label="Listen to the rules"></button>
+      <button class="tool off" type="button" data-act="music" id="musicBtn" title="Music off" aria-label="Music off"></button>
     </div>
   </nav>
 
@@ -394,8 +393,7 @@ input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;bac
         <div class="stno">Stage <b id="tNo">1</b> of 4</div>
         <h2 class="big" id="tName"></h2>
         <p class="lead" id="tHow"></p>
-        <div class="go voice-only">Say <b>“LET'S BUILD!”</b> or <b>CLAP</b> to start</div>
-        <button class="go teacher-only" type="button" data-act="ok">▶ Start</button>
+        <button class="go" type="button" data-act="ok">▶ Start</button>
       </div>
     </section>
 
@@ -406,28 +404,19 @@ input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;bac
           <div class="count" id="wCount"></div>
           <p class="sentence" id="wSentence"></p>
           <div class="hint" id="wHint"></div>
-          <div class="choices teacher-only" id="wChoices"></div>
-          <div class="say voice-only">Shout the missing word! · Say <b>“HELP”</b> for a hint</div>
+          <div class="choices" id="wChoices"></div>
+          <button class="go" type="button" id="wNext" style="display:none">Next ▶</button>
         </div>
       </div>
       <div class="fb" id="wFb"></div>
     </section>
 
-    <section class="screen" id="sc-clap">
-      <div class="clapwrap">
-        <div class="target">Clap for buildings for <span class="tgt" id="cTarget">SLEEPING</span></div>
-        <div class="belt"><div class="pcard off" id="cCard"></div></div>
-        <div class="timer"><div id="cTimer"></div></div>
-        <div class="tally" id="cTally"></div>
-        <div class="fb" id="cFb"></div>
-      </div>
-    </section>
-
     <section class="screen" id="sc-sort">
-      <div class="clapwrap">
+      <div class="sortwrap">
         <div class="target">Who is this building for?</div>
         <div class="belt"><div class="pcard off" id="sCard"></div></div>
         <div class="choices cats" id="sCats"></div>
+        <button class="go" type="button" id="sNext" style="display:none">Next ▶</button>
         <div class="tally" id="sTally"></div>
         <div class="fb" id="sFb"></div>
       </div>
@@ -444,11 +433,15 @@ input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;bac
 
     <section class="screen" id="sc-end">
       <div class="card-sheet">
-        <p class="eyebrow">Construction complete</p>
-        <h2 class="big">Your city is <span>finished!</span></h2>
+        <p class="eyebrow" id="endEye">Game complete</p>
+        <h2 class="big" id="endH">Well <span>done!</span></h2>
         <p class="lead" id="endTxt"></p>
-        <div class="go voice-only">Say <b>“AGAIN!”</b> or <b>CLAP</b> to play again</div>
-        <button class="go teacher-only" type="button" data-act="ok">▶ Play again</button>
+        <div class="endstats" id="endStats"></div>
+        <div class="endbtns" id="endBtns">
+          <button class="hbtn" type="button" data-end="home">🏠 Home</button>
+          <button class="hbtn" type="button" data-end="again">↻ Play again</button>
+          <button class="go" type="button" data-end="next" id="endNext">Next game ▶</button>
+        </div>
       </div>
     </section>
   </main>
@@ -461,17 +454,12 @@ input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;bac
     </svg>
   </div>
 
-  <footer class="listen">
-    <div class="ear voice-only" id="ear"><span class="dot"></span><span id="earTxt">Microphone off</span></div>
-    <div class="tbtns teacher-only" role="group" aria-label="Teacher buttons">
+  <footer class="foot">
+    <div class="tbtns" role="group" aria-label="Teacher buttons">
       <button type="button" data-act="hint">💡 Hint</button>
       <button type="button" data-act="repeat">🔊 Read again</button>
       <button type="button" data-act="skip">Show answer →</button>
     </div>
-    <div class="heard voice-only">I heard: <span id="heard">…</span></div>
-    <span class="mlabel voice-only">Clap meter</span>
-    <span class="clapbadge voice-only" id="clapBadge">CLAP!</span>
-    <div class="meter voice-only" id="meter"><div class="lvl" id="lvl"></div><div class="thr" id="thr"></div></div>
   </footer>
 </div>
 
@@ -480,14 +468,6 @@ input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;bac
     <div class="ribbon"><h2>Settings</h2></div>
     <div class="sbody">
     <div class="srow">
-      <div><b>Voice control</b><span>The child's claps and words, same room only. Off = teacher control.</span></div>
-      <button class="switch" type="button" id="swVoice" role="switch" aria-checked="false" aria-label="Voice control"><i></i></button>
-    </div>
-    <div class="srow">
-      <div><b>Microphone</b><span id="micTxt">Not asked yet</span></div>
-      <button class="hbtn" type="button" id="micBtn">Allow microphone</button>
-    </div>
-    <div class="srow">
       <div><b>Game voice</b><span>Reads the clues aloud</span></div>
       <button class="switch" type="button" id="swSound" role="switch" aria-checked="true" aria-label="Game voice"><i></i></button>
     </div>
@@ -495,38 +475,29 @@ input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;bac
       <div><b>Game voice volume</b></div>
       <input type="range" id="volRange" min="0" max="1" step="0.1" aria-label="Game voice volume">
     </div>
-    <div class="srow voice-only">
-      <div><b>Clap sensitivity</b><span>Less ↔ More</span></div>
-      <input type="range" id="sensRange" min="-2" max="2" step="0.25" aria-label="Clap sensitivity">
-    </div>
-    <div class="srow voice-only">
-      <div><b>Round length</b><span>Shorter ↔ Longer</span></div>
-      <input type="range" id="paceRange" min="0.5" max="2.5" step="0.25" aria-label="Round length">
+    <div class="srow">
+      <div><b>Music volume</b></div>
+      <input type="range" id="musicRange" min="0" max="1" step="0.05" aria-label="Music volume">
     </div>
     <h3 class="keyh">Teacher keys</h3>
     <dl>
-      <dt><kbd>Space</kbd> or <kbd>C</kbd></dt><dd>Counts as a clap (also starts each stage)</dd>
-      <dt><kbd>Return</kbd> or <kbd>Y</kbd></dt><dd>Mark the answer correct / start</dd>
-      <dt><kbd>L</kbd></dt><dd>Switch between teacher control and voice control (microphone)</dd>
+      <dt><kbd>Space</kbd>, <kbd>C</kbd>, <kbd>Return</kbd> or <kbd>Y</kbd></dt><dd>Start, mark the answer correct, or go to the next question</dd>
       <dt><kbd>→</kbd></dt><dd>Skip and show the answer</dd>
       <dt><kbd>H</kbd> / <kbd>R</kbd></dt><dd>Show a hint / read the clue (or the rules) again</dd>
       <dt><kbd>P</kbd></dt><dd>Pause / carry on</dd>
       <dt><kbd>0</kbd></dt><dd>Home: back to the start screen</dd>
       <dt><kbd>1</kbd>–<kbd>4</kbd></dt><dd>Jump to a stage</dd>
-      <dt><kbd>[</kbd> <kbd>]</kbd></dt><dd>Clap meter less / more sensitive (yellow line)</dd>
-      <dt><kbd>-</kbd> <kbd>=</kbd></dt><dd>Clap rounds slower / faster</dd>
       <dt><kbd>M</kbd></dt><dd>Game voice on / off</dd>
       <dt><kbd>?</kbd></dt><dd>Open or close these settings</dd>
     </dl>
-    <p>You can also click a step, a word or a picture for the child.</p>
-    <div class="srow end"><button class="hbtn green" type="button" id="setClose">Done</button></div>
+    <p>You can also click a word or a picture for the child. In The Architect’s Plan, drag each step into the track.</p>
+    <div class="srow end"><button class="hbtn proceed" type="button" id="setClose">Done</button></div>
     </div>
   </div>
 </div>
 <div class="pausebox" id="pause" hidden>
-  <div class="box"><div class="ribbon"><h2>Paused</h2></div><p>Press <kbd>P</kbd> or click to carry on</p></div>
+  <div class="box"><div class="ribbon"><h2>Paused</h2></div><p>Press <kbd>P</kbd> or click to carry on</p><button class="go" type="button">▶ Continue</button></div>
 </div>
-<div class="toast" id="toast"></div>
 
 <script>
 const $ = s => document.querySelector(s);
@@ -535,8 +506,6 @@ let paused = false, pauseT0 = 0, pausedMs = 0;
 const clock = () => (paused ? pauseT0 : Date.now()) - pausedMs;
 const sleep = ms => new Promise(r => { const end = clock() + ms; (function tick() { if (!paused && clock() >= end) r(); else setTimeout(tick, 30); })(); });
 const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
-const norm = s => s.toLowerCase().replace(/[^a-z\s]/g, '').replace(/\s+/g, ' ').trim();
-const squash = s => norm(s).replace(/ /g, '');
 const art = w => (/^[aeiou]/i.test(w) ? 'An ' : 'A ') + w;
 
 /* ---------- building drawings (viewBox 0 0 100 120, ground at y=114) ---------- */
@@ -570,28 +539,26 @@ const iconSvg = (k, cls) => `<svg class="ico ${cls}" viewBox="0 0 100 120" aria-
 /* ---------- lesson content (Student Book pp. 172–176) ---------- */
 const S1 = [
   { w: 'stadium', s: 'You can play many kinds of sports in a ___.' },
-  { w: 'lighthouse', s: 'The old ___ kept ships away from the rocks.', also: ['lightouse'] },
+  { w: 'lighthouse', s: 'The old ___ kept ships away from the rocks.' },
   { w: 'tower', s: 'You could see the tall ___ from a long way away.' },
-  { w: 'skyscraper', fill: 'skyscrapers', s: 'New York City is famous for its huge ___.', also: ['scraper'] },
-  { w: 'warehouse', s: 'New books are stored in the ___.', also: ['wherehouse', 'wearhouse'] },
+  { w: 'skyscraper', fill: 'skyscrapers', s: 'New York City is famous for its huge ___.' },
+  { w: 'warehouse', s: 'New books are stored in the ___.' },
   { w: 'palace', fill: 'palaces', s: 'In the past, kings and queens lived in ___.' },
-  { w: 'courthouse', s: 'Judges and lawyers go to the ___ every day.', also: ['corthouse'] },
-  { w: 'theater', s: 'She went to the ___ to see a new play.', also: ['theatre'] },
-  { w: 'concert hall', s: 'The musicians will perform in the ___ tonight.', also: ['concert'] },
+  { w: 'courthouse', s: 'Judges and lawyers go to the ___ every day.' },
+  { w: 'theater', s: 'She went to the ___ to see a new play.' },
+  { w: 'concert hall', s: 'The musicians will perform in the ___ tonight.' },
   { w: 'office', s: 'Many business people work in an ___.' },
-  { w: 'art gallery', s: 'He’s showing his paintings at an ___ next week.', also: ['gallery'] },
+  { w: 'art gallery', s: 'He’s showing his paintings at an ___ next week.' },
   { w: 'showroom', s: 'The new car was displayed in a ___.' }
 ];
 const S4 = [
   { w: 'function', s: 'Protecting people from the weather is an important ___ of a building.' },
-  { w: 'steel', s: '___ is used to make many things, including doors and window frames.', also: ['steal'] },
-  { w: 'countless', s: 'There are ___ ways to design buildings.', also: ['countles'] },
+  { w: 'steel', s: '___ is used to make many things, including doors and window frames.' },
+  { w: 'countless', s: 'There are ___ ways to design buildings.' },
   { w: 'architect', s: 'Most buildings are designed by an ___.' },
-  { w: 'aquatics', s: '___ are sports that take place in or on water.', also: ['aquatic'] },
+  { w: 'aquatics', s: '___ are sports that take place in or on water.' },
   { w: 'construction', s: 'Before ___ begins, engineers study the architect’s plan.' }
 ];
-[...S1, ...S4].forEach(it => it.alts = [it.w, ...(it.also || [])].map(squash));
-const ALL_WORDS = [...S1, ...S4].map(it => it.w);
 
 const CAT = {
   sleep: { label: 'SLEEPING', say: 'sleeping' },
@@ -617,9 +584,7 @@ const ORD = ['first', 'second', 'third', 'fourth', 'fifth', 'last'];
 
 /* ---------- state ---------- */
 const G = {};
-let mode = null; // 'teacher' (keys and clicks) or 'voice' (microphone)
-const isT = () => mode !== 'voice';
-let gen = 0, stars = 0, pace = 1, sens = 1, vol = 1, muted = false, speaking = false, speakEnd = 0, audioOn = false, micOk = null;
+let gen = 0, stars = 0, vol = 1, muted = false, speaking = false;
 
 /* ---------- game voice ---------- */
 let voice = null;
@@ -634,14 +599,14 @@ async function say(text) {
   return new Promise(res => {
     if (muted || !('speechSynthesis' in window)) { res(); return; }
     const id = ++sayId;
-    speaking = true; setEar(); Voice.pause();
+    speaking = true;
     const u = new SpeechSynthesisUtterance(text);
     if (voice) u.voice = voice;
     u.lang = 'en-US'; u.rate = .9; u.pitch = 1.05; u.volume = vol;
     let fin = false;
     const end = () => {
       if (fin) return; fin = true;
-      if (id === sayId) { speaking = false; speakEnd = Date.now(); setEar(); setTimeout(() => Voice.resume(), 150); }
+      if (id === sayId) speaking = false;
       res();
     };
     u.onend = end; u.onerror = end;
@@ -649,125 +614,45 @@ async function say(text) {
     speechSynthesis.cancel(); speechSynthesis.speak(u);
   });
 }
-function hush() { sayId++; speaking = false; if ('speechSynthesis' in window) speechSynthesis.cancel(); setEar(); Voice.resume(); }
+function hush() { sayId++; speaking = false; if ('speechSynthesis' in window) speechSynthesis.cancel(); }
 
-/* ---------- speech recognition ---------- */
-const Voice = {
-  rec: null, ok: false, want: false, running: false,
-  init() {
-    if (this.rec) { this.want = this.ok; this.start(); return; }
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SR) return;
-    const r = new SR();
-    r.continuous = true; r.interimResults = true; r.lang = 'en-US'; r.maxAlternatives = 5;
-    r.onresult = e => {
-      for (let i = e.resultIndex; i < e.results.length; i++) {
-        const res = e.results[i], alts = [];
-        for (let k = 0; k < res.length; k++) alts.push(res[k].transcript);
-        onHeard(alts, res.isFinal);
-      }
-    };
-    r.onstart = () => { this.running = true; setEar(); };
-    r.onend = () => { this.running = false; setEar(); if (this.want && !speaking) setTimeout(() => this.start(), 250); };
-    r.onerror = e => { if (e.error === 'not-allowed' || e.error === 'service-not-allowed') { this.ok = false; this.want = false; setEar(); } };
-    this.rec = r; this.ok = true; this.want = true; this.start();
-  },
-  start() { if (!this.ok || this.running || speaking) return; try { this.rec.start(); this.running = true; } catch (e) {} },
-  pause() { if (this.rec && this.running) try { this.rec.abort(); } catch (e) {} },
-  resume() { if (this.want) this.start(); }
-};
-function onHeard(alts, final) {
-  if (speaking || paused) return;
-  $('#heard').textContent = alts[0].trim() || '…';
-  G.onSpeech?.(alts, final);
-}
-
-/* ---------- clap detector ----------
-   Every audio sample is checked in 5 ms chunks (an analyser polled once per frame
-   misses short claps). A clap = a chunk well above the background level that
-   was quiet ~10–60 ms before. The bar adapts to room noise; [ and ] scale it. */
-let micReady = false, ac = null, micStream = null, micSrc = null, proc = null, floor = 0.01, meterPeak = 0, lastClap = 0;
-const METER_MAX = 0.6;
+/* sound effects, made with the Web Audio API so no sound files are needed; they follow the game voice switch (M) */
+let ac = null;
 function ensureCtx() {
   // created inside the teacher's key press so Safari lets it run
   if (!ac) ac = new (window.AudioContext || window.webkitAudioContext)();
   if (ac.state !== 'running') ac.resume().catch(() => {});
 }
-function clapBar() { return Math.max(0.12, floor * 6) * sens * (speaking ? 1.5 : 1); }
-async function connectMic() {
-  micStream?.getTracks().forEach(t => t.stop());
-  micSrc?.disconnect();
-  micStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
-  micSrc = ac.createMediaStreamSource(micStream);
-  micSrc.connect(proc);
+function tone(freq, when, dur, { type = 'sine', vol = 0.2, slide = 0 } = {}) {
+  const t = ac.currentTime + when;
+  const o = ac.createOscillator(), g = ac.createGain();
+  o.type = type; o.frequency.setValueAtTime(freq, t);
+  if (slide) o.frequency.exponentialRampToValueAtTime(freq * slide, t + dur);
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(vol, t + 0.01);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  o.connect(g).connect(ac.destination);
+  o.start(t); o.stop(t + dur + 0.02);
 }
-async function initMic() {
-  try {
-    ensureCtx();
-    proc = ac.createScriptProcessor(1024, 1, 1);
-    const silent = ac.createGain(); silent.gain.value = 0;
-    proc.connect(silent); silent.connect(ac.destination); // the processor only runs while connected
-    const CH = 256, hist = new Array(12).fill(0);
-    proc.onaudioprocess = e => {
-      const d = e.inputBuffer.getChannelData(0);
-      for (let o = 0; o < d.length; o += CH) {
-        let pk = 0;
-        for (let i = o; i < o + CH; i++) { const a = d[i] < 0 ? -d[i] : d[i]; if (a > pk) pk = a; }
-        let before = 0;
-        for (let i = 0; i < hist.length - 1; i++) if (hist[i] > before) before = hist[i];
-        const now = performance.now();
-        if (pk > clapBar() && before < pk * 0.45 && now - lastClap > 300) { lastClap = now; setTimeout(fireClap, 0); }
-        hist.shift(); hist.push(pk);
-        floor += (Math.min(pk, floor * 3 + 0.005) - floor) * 0.003; // slow, ignores spikes
-        if (pk > meterPeak) meterPeak = pk;
-      }
-    };
-    await connectMic();
-    micOk = micReady = true; setEar();
-    const lvl = $('#lvl'), thr = $('#thr');
-    let shown = 0;
-    const draw = () => {
-      shown = Math.max(meterPeak, shown * 0.88); meterPeak = 0;
-      lvl.style.transform = `scaleX(${Math.min(1, shown / METER_MAX)})`;
-      thr.style.left = `calc(${Math.min(1, clapBar() / METER_MAX) * 100}% - 1px)`;
-      requestAnimationFrame(draw);
-    };
-    draw();
-    // Safari can pause the audio or drop the mic when voice recognition starts: keep it alive
-    setInterval(async () => {
-      if (!audioOn) return;
-      if (ac.state !== 'running') ac.resume().catch(() => {});
-      const tr = micStream?.getAudioTracks()[0];
-      if (!tr || tr.readyState === 'ended') { try { await connectMic(); } catch (e) {} }
-    }, 1000);
-  } catch (e) { micOk = false; setEar(); }
-}
-function fireClap() {
-  if (paused) return;
-  const m = $('#meter'); m.classList.add('flash'); setTimeout(() => m.classList.remove('flash'), 250);
-  const b = $('#clapBadge'); b.classList.remove('show'); void b.offsetWidth; b.classList.add('show');
-  G.onClap?.();
-}
-
-function setEar() {
-  const ear = $('#ear'), t = $('#earTxt');
-  ear.className = 'ear voice-only';
-  if (!audioOn) { t.textContent = speaking ? 'Game is talking…' : 'Mic off · press L'; if (speaking) ear.classList.add('talk'); return; }
-  if (speaking) { ear.classList.add('talk'); t.textContent = 'Game is talking…'; return; }
-  if (Voice.ok) { ear.classList.add('on'); t.textContent = 'Listening'; return; }
-  if (micOk) { ear.classList.add('on'); t.textContent = 'Claps only (no voice)'; return; }
-  if (micOk === false) { ear.classList.add('bad'); t.textContent = 'Mic blocked: use teacher keys'; }
-}
-
+function sfx(play) { if (muted) return; ensureCtx(); if (ac) play(); }
+const chimeSound = () => sfx(() => { tone(1046.5, 0, 0.6); tone(1318.5, 0.12, 0.7); tone(1568, 0.24, 0.9); });
+const wrongSound = () => sfx(() => { tone(330, 0, 0.35, { type: 'square', vol: 0.07, slide: 0.7 }); tone(247, 0.18, 0.4, { type: 'square', vol: 0.07, slide: 0.8 }); });
+const clickSound = () => sfx(() => tone(1600, 0, 0.04, { type: 'triangle', vol: 0.15, slide: 0.5 }));
+const cheerSound = () => sfx(() => {
+  [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => tone(f, i * 0.11, 0.25, { type: 'triangle', vol: 0.2 }));
+  [1046.5, 1318.5, 1568].forEach(f => tone(f, 0.5, 1, { type: 'triangle', vol: 0.16 }));
+});
 /* ---------- little helpers ---------- */
 function show(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.toggle('on', s.id === 'sc-' + id));
   document.body.classList.toggle('asking', id === 'words' || id === 'sort'); // Hint / Read again / Show answer only make sense here
+  document.body.classList.toggle('no-city', !['words', 'plan'].includes(id)); // the city strip only grows in these two exercises
 }
-function fb(id, text, kind = '') { const el = $(id); el.textContent = text; el.className = 'fb ' + kind; }
+function fb(id, text, kind = '') {
+  const el = $(id); el.textContent = text; el.className = 'fb ' + kind;
+  if (kind === 'good') chimeSound(); else if (kind === 'oops') wrongSound();
+}
 function addStar() { stars++; const s = $('#stars'); s.textContent = stars; s.classList.remove('bump'); void s.offsetWidth; s.classList.add('bump'); }
-let toastT;
-function toast(t, ms = 1400) { const el = $('#toast'); el.textContent = t; el.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove('show'), ms); }
 function confetti() {
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   const cols = ['var(--sun)', 'var(--mint)', 'var(--coral)', 'var(--line)'];
@@ -796,26 +681,20 @@ function addToCity(k) {
 }
 function resetCity() { $('#cityB').innerHTML = ''; cityCount = 0; $('#cityHint').style.display = ''; }
 
-/* ---------- waiting for "let's build" / a clap ---------- */
-const GO = /\b(lets build|build|start|go|ready|next|yes|again|play)\b/;
+/* ---------- waiting for the teacher to start (Start button, Space or Return) ---------- */
 function waitGo(my) {
   return new Promise(res => {
     let iv;
-    const done = v => { clearInterval(iv); if (my === gen) G.onClap = G.onSpeech = G.onEnter = null; res(v); };
-    G.onClap = () => done(true);
+    const done = v => { clearInterval(iv); if (my === gen) G.onEnter = null; res(v); };
     G.onEnter = () => done(true);
-    G.onSpeech = alts => { if (GO.test(norm(alts.join(' ')))) done(true); };
     iv = setInterval(() => { if (my !== gen) done(false); }, 300);
   });
 }
 
-/* ---------- stage 1 & 4: shout the word ---------- */
-function otherWord(text, it) {
-  const t = squash(text);
-  return ALL_WORDS.find(w => w !== it.w && t.includes(squash(w)) && !squash(it.w).includes(squash(w)));
-}
+/* ---------- stage 1 & 4: the teacher picks the missing word ---------- */
 async function runWords(list, mode, my) {
   show('words');
+  document.body.classList.toggle('no-city', mode !== 'pic'); // only Name the Building adds to the city
   const plate = $('#wPlate');
   if (mode === 'bank') {
     plate.innerHTML = `<span class="fig">WORD BANK</span><div class="chips">${list.map(it => `<div class="chip" data-w="${it.w}">${it.w}</div>`).join('')}</div>`;
@@ -837,12 +716,13 @@ function playWord(it, i, n, mode, my) {
     $('#wSentence').innerHTML = it.s.replace('___', '<span class="blank waiting">?</span>');
     $('#wHint').innerHTML = '';
     fb('#wFb', '');
+    $('#wNext').style.display = 'none';
     if (mode === 'pic') { $('#wFig').textContent = `FIG. ${i + 1}`; $('#wPic').innerHTML = iconSvg(it.w, 'draft'); }
     // teacher control: three buttons to pick from (Word Detective uses the word bank instead)
     const opts = mode === 'pic' ? shuffle([it.w, ...shuffle(S1.filter(x => x.w !== it.w)).slice(0, 2).map(x => x.w)]) : [];
     $('#wChoices').innerHTML = opts.map(w => `<button type="button" class="choice" data-w="${w}">${w}</button>`).join('');
 
-    const cleanup = () => { clearInterval(iv); if (my !== gen) return; G.onSpeech = G.onEnter = G.onSkip = G.onHint = G.onRepeat = G.onResume = G.onChip = null; };
+    const cleanup = () => { clearInterval(iv); if (my !== gen) return; G.onEnter = G.onSkip = G.onHint = G.onRepeat = G.onResume = G.onChip = null; };
     const readClue = () => say(it.s.replace('___', 'blank'));
     const showHint = () => {
       if (done) return;
@@ -858,21 +738,25 @@ function playWord(it, i, n, mode, my) {
       $('#wChoices').querySelector(`[data-w="${it.w}"]`)?.classList.add('right');
       if (mode === 'pic') { $('#wPic').innerHTML = iconSvg(it.w, 'built pop'); addToCity(it.w); }
       else document.querySelector(`.chip[data-w="${it.w}"]`)?.classList.add('used');
-      if (ok) { addStar(); confetti(); fb('#wFb', `Yes! ${cap.toUpperCase()}!`, 'good'); await say('Yes! ' + it.s.replace('___', answer)); }
-      else { fb('#wFb', `The answer is “${answer}”.`, 'note'); await say(`The answer is ${answer}. ` + it.s.replace('___', answer)); }
+      if (ok) {
+        // a correct answer stays on screen: the child reads the whole sentence, then the teacher presses Next
+        addStar(); confetti(); fb('#wFb', `Yes! ${cap.toUpperCase()}!`, 'good');
+        waitNext();
+        await say('Yes! ' + it.s.replace('___', answer));
+        return;
+      }
+      fb('#wFb', `The answer is “${answer}”.`, 'note'); await say(`The answer is ${answer}. ` + it.s.replace('___', answer));
       await sleep(700);
       resolve();
     };
-
-    G.onSpeech = (alts, final) => {
-      if (done) return;
-      const all = alts.join(' | ');
-      if (it.alts.some(a => squash(all).includes(a))) return finish(true);
-      const t = norm(alts[0]);
-      if (/\b(help|hint|clue)\b/.test(t)) return showHint();
-      if (/\b(repeat|again)\b/.test(t)) return readClue();
-      if (final) { const o = otherWord(alts[0], it); if (o) fb('#wFb', `Not “${o}”… try again!`, 'oops'); }
+    // Next (button, Space or Return) moves on to the next question
+    const waitNext = () => {
+      const btn = $('#wNext');
+      btn.style.display = '';
+      G.onRepeat = readClue; // Read again still works while the sentence is up
+      G.onEnter = () => { G.onEnter = G.onRepeat = null; btn.style.display = 'none'; resolve(); };
     };
+
     G.onEnter = () => finish(true);
     G.onSkip = () => finish(false);
     G.onHint = showHint;
@@ -896,60 +780,6 @@ function playWord(it, i, n, mode, my) {
   });
 }
 
-/* ---------- stage 2: clap catch ---------- */
-async function runClap(my) {
-  show('clap');
-  for (const cat of shuffle(Object.keys(CAT))) {
-    if (my !== gen) return;
-    const keys = Object.keys(PLACES);
-    const seq = shuffle([
-      ...shuffle(keys.filter(k => PLACES[k] === cat)).slice(0, 3),
-      ...shuffle(keys.filter(k => PLACES[k] !== cat)).slice(0, 4)
-    ]);
-    $('#cTarget').textContent = CAT[cat].label;
-    $('#cTally').innerHTML = seq.map(() => '<i></i>').join('');
-    $('#cCard').className = 'pcard off';
-    $('#cTimer').style.transform = 'scaleX(1)';
-    fb('#cFb', '');
-    G.onClap = hush;
-    await say(`Clap for buildings for ${CAT[cat].say}!`);
-    if (my === gen) G.onClap = null;
-    await sleep(500);
-    for (let i = 0; i < seq.length; i++) {
-      if (my !== gen) return;
-      await showPlace(seq[i], cat, i, my);
-    }
-    await sleep(600);
-  }
-}
-async function showPlace(k, cat, i, my) {
-  const card = $('#cCard'), dot = $('#cTally').children[i], label = placeLabel(k), isT = PLACES[k] === cat;
-  card.innerHTML = iconSvg(k, 'built') + `<div class="label">${label}</div>`;
-  card.className = 'pcard'; void card.offsetWidth; card.className = 'pcard in';
-  fb('#cFb', '');
-  let open = false, clapped = false;
-  G.onClap = () => {
-    if (!open || clapped) return;
-    clapped = true;
-    if (isT) { addStar(); card.classList.add('hit'); dot.className = 'hit'; dot.textContent = '★'; fb('#cFb', `Yes! ${art(label)} is for ${CAT[cat].say}.`, 'good'); }
-    else { card.classList.add('wrong'); dot.className = 'wrong'; dot.textContent = '✕'; fb('#cFb', `Oops! ${art(label)} is for ${CAT[PLACES[k]].say}.`, 'oops'); }
-  };
-  open = true;
-  await say(label);
-  const dur = 3200 * pace, t0 = clock(), bar = $('#cTimer');
-  while (clock() - t0 < dur) {
-    if (my !== gen) return;
-    bar.style.transform = `scaleX(${1 - (clock() - t0) / dur})`;
-    await sleep(40);
-  }
-  open = false; G.onClap = null;
-  if (isT && !clapped) { dot.className = 'miss'; dot.textContent = '!'; card.classList.add('missed'); fb('#cFb', `${art(label)} is for ${CAT[cat].say}. Clap next time!`, 'note'); await sleep(1300); }
-  else if (!clapped) { dot.className = 'ok'; dot.textContent = '✓'; }
-  else await sleep(800);
-  card.classList.add('out');
-  await sleep(350);
-}
-
 /* ---------- stage 2, teacher control: sort each building into a group ---------- */
 async function runSort(my) {
   show('sort');
@@ -970,6 +800,7 @@ function sortPlace(k, i, my) {
     card.className = 'pcard'; void card.offsetWidth; card.className = 'pcard in';
     $('#sCats').querySelectorAll('.choice').forEach(b => b.className = 'choice');
     fb('#sFb', '');
+    $('#sNext').style.display = 'none';
     const cleanup = () => { clearInterval(iv); if (my !== gen) return; G.onCat = G.onSkip = G.onRepeat = null; };
     const finish = async ok => {
       if (done) return;
@@ -977,6 +808,20 @@ function sortPlace(k, i, my) {
       $('#sCats').querySelector(`[data-c="${cat}"]`).classList.add('right');
       if (ok) { addStar(); card.classList.add('hit'); dot.className = tries ? 'ok' : 'hit'; dot.textContent = tries ? '✓' : '★'; fb('#sFb', `Yes! ${art(label)} is for ${CAT[cat].say}.`, 'good'); }
       else { card.classList.add('missed'); dot.className = 'miss'; dot.textContent = '!'; fb('#sFb', `${art(label)} is for ${CAT[cat].say}.`, 'note'); }
+      if (ok) {
+        // a correct sort stays on screen until the teacher presses Next
+        const next = $('#sNext');
+        next.style.display = '';
+        G.onRepeat = () => say(label);
+        G.onEnter = async () => {
+          G.onEnter = G.onRepeat = null; next.style.display = 'none';
+          card.classList.add('out');
+          await sleep(350);
+          resolve();
+        };
+        await say(`${art(label)} is for ${CAT[cat].say}.`);
+        return;
+      }
       await say(`${art(label)} is for ${CAT[cat].say}.`);
       await sleep(700);
       card.classList.add('out');
@@ -999,13 +844,13 @@ function sortPlace(k, i, my) {
 }
 
 /* ---------- stage 3: the architect's plan ---------- */
-function waitClap(ms, my) {
+// waits until the teacher drags a step onto the track (or clicks one); resolves with the step's index
+function waitPick(my) {
   return new Promise(res => {
-    const t0 = clock(); let iv;
-    const done = v => { clearInterval(iv); if (my === gen) G.onClap = G.onPick = null; res(v); };
-    if (!isT()) G.onClap = () => done(true);
-    G.onPick = i => done(i); // the teacher clicked a step
-    iv = setInterval(() => { if (my !== gen || clock() - t0 > ms) done(false); }, 50);
+    let iv;
+    const done = v => { clearInterval(iv); if (my === gen) G.onPick = null; res(v); };
+    G.onPick = i => done(i);
+    iv = setInterval(() => { if (my !== gen) done(null); }, 100);
   });
 }
 async function runPlan(my) {
@@ -1014,32 +859,19 @@ async function runPlan(my) {
   $('#pPool').innerHTML = pool.map(c => `<div class="step" data-i="${c.i}">${c.t}</div>`).join('');
   $('#pTrack').innerHTML = STEPS.map((_, i) => `<li class="slot" data-i="${i}"><span class="n">${i + 1}</span></li>`).join('');
   fb('#pFb', '');
-  let next = 0, k = 0;
+  let next = 0;
   const el = c => document.querySelector(`.step[data-i="${c.i}"]`);
-  const t = isT();
-  const prompt = () => $('#pPrompt').innerHTML = t ? `Pick the <b>${ORD[next]}</b> step!` : `Clap when the light is on the <b>${ORD[next]}</b> step!`;
+  const prompt = () => $('#pPrompt').innerHTML = `Drag the <b>${ORD[next]}</b> step into place!`;
   prompt();
-  G.onClap = hush;
-  await say(t ? 'What does an architect do first? Pick the first step!' : 'What does an architect do first? Clap when the light is on the first step!');
-  if (my === gen) G.onClap = null;
+  await say('What does an architect do first? Drag the first step into place!');
   while (next < STEPS.length) {
+    const got = await waitPick(my);
     if (my !== gen) return;
-    const rem = pool.filter(c => !c.placed);
-    k %= rem.length;
-    let c = rem[k];
-    document.querySelectorAll('.step').forEach(s => s.classList.remove('spot', 'nope'));
-    if (!t) el(c).classList.add('spot'); // teacher control: no moving light, just click a step
-    let got = await waitClap(t ? Infinity : 2400 * pace, my);
-    if (my !== gen) return;
-    if (got === false) { k++; continue; }
-    if (got !== true) {
-      const p = pool.find(x => x.i === got);
-      if (!p || p.placed) continue;
-      el(c).classList.remove('spot'); c = p; el(c).classList.add('spot');
-    }
+    const c = pool.find(x => x.i === got);
+    if (!c || c.placed) continue;
     if (c.i === next) {
       c.placed = true;
-      el(c).classList.remove('spot'); el(c).classList.add('placed');
+      el(c).classList.add('placed');
       const slot = document.querySelector(`.slot[data-i="${c.i}"]`);
       slot.classList.add('filled'); slot.insertAdjacentHTML('beforeend', c.t);
       addStar();
@@ -1049,39 +881,32 @@ async function runPlan(my) {
       await sleep(1100);
     } else {
       el(c).classList.add('nope');
-      fb('#pFb', t ? 'Not yet! Try another step.' : 'Not yet! Wait for the right step.', 'oops');
+      fb('#pFb', 'Not yet! Try another step.', 'oops');
       await sleep(800);
-      k++;
+      el(c).classList.remove('nope');
     }
   }
-  document.querySelectorAll('.step').forEach(s => s.classList.remove('spot'));
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('nope'));
   $('#pPrompt').innerHTML = 'Great planning, <b>architect!</b>';
-  confetti(); addToCity('crane');
+  confetti(); cheerSound(); addToCity('crane');
   await say('Great planning! ' + STEPS.map(s => s.say).join(' '));
   await sleep(600);
 }
 
 /* ---------- flow ---------- */
-// voice control texts, then the teacher control versions (t*), which never ask to clap or speak
 const STAGES = [
-  { name: 'Name the Building', how: 'Look at the drawing and listen to the sentence. Shout the missing building!',
-    tHow: 'Look at the drawing and listen to the sentence. Pick the missing building!', run: my => runWords(S1, 'pic', my) },
-  { name: 'Clap Catch', how: 'Buildings for sleeping, working and having fun. Clap when you see the right kind!',
-    tName: 'Sort the Buildings', tHow: 'Is it for sleeping, working or having fun? Pick the right group!', run: my => isT() ? runSort(my) : runClap(my) },
-  { name: 'The Architect’s Plan', how: 'What does an architect do first? A light moves over the steps. Clap when it shines on the right one!',
-    tHow: 'What does an architect do first? Pick the steps in the right order!', run: runPlan },
-  { name: 'Word Detective', how: 'Find the missing word from the article. Shout it out!',
-    tHow: 'Find the missing word from the article. Pick it from the word bank!', run: my => runWords(S4, 'bank', my) }
+  { name: 'Name the Building', how: 'Look at the drawing and listen to the sentence. Pick the missing building!', run: my => runWords(S1, 'pic', my) },
+  { name: 'Sort the Buildings', how: 'Is it for sleeping, working or having fun? Pick the right group!', run: runSort },
+  { name: 'The Architect’s Plan', how: 'What does an architect do first? Drag each step into its place in the track, in the right order!', run: runPlan },
+  { name: 'Word Detective', how: 'Find the missing word from the article. Pick it from the word bank!', run: my => runWords(S4, 'bank', my) }
 ];
 const CARD = [
   'Read the sentence and find the missing building.',
   'Is it for sleeping, working or having fun?',
-  'Put the steps of a plan in order.',
+  'Put the steps of a plan in order. Drag each step into its place.',
   'Find the missing word from the article.'
 ];
-const stName = st => isT() ? st.tName || st.name : st.name;
-const stHow = st => isT() ? st.tHow : st.how;
-let curStage = null;
+let curStage = null, stageT0 = 0, starsAt = 0, endPick = null;
 async function playStage(i) {
   setPause(false, true);
   const my = ++gen;
@@ -1089,74 +914,90 @@ async function playStage(i) {
   for (const k of Object.keys(G)) G[k] = null;
   const st = STAGES[i];
   curStage = i;
-  $('#tNo').textContent = i + 1; $('#tName').textContent = stName(st); $('#tHow').textContent = stHow(st);
+  $('#tNo').textContent = i + 1; $('#tName').textContent = st.name; $('#tHow').textContent = st.how;
   show('title');
   // the rules are read only when the teacher asks (button or R)
-  G.onRules = G.onRepeat = () => say(`Stage ${i + 1}. ${stName(st)}. ${stHow(st)}` + (isT() ? '' : " Say let's build, or clap, to start!"));
+  G.onRules = G.onRepeat = () => say(`Stage ${i + 1}. ${st.name}. ${st.how}`);
   if (!await waitGo(my)) return;
   G.onRules = G.onRepeat = null;
   hush();
+  stageT0 = clock(); starsAt = stars; // the stats count from here; paused time is left out
   await st.run(my);
   if (my !== gen) return;
-  if (i < STAGES.length - 1) playStage(i + 1); else finale();
+  await gameDone(i, my);
 }
-async function finale() {
-  const my = ++gen;
+/* the success screen after each game: sound, stats, and Home / Play again / Next game */
+async function gameDone(i, my) {
+  const last = i === STAGES.length - 1;
   curStage = null;
-  $('#endTxt').textContent = `You earned ${stars} stars and built ${cityCount} buildings. Great work, architect!`;
-  show('end'); confetti();
-  say(`Your city is finished! You earned ${stars} stars!` + (isT() ? '' : ' Say again, or clap, to play again.'));
-  if (!await waitGo(my)) return;
-  stars = 0; $('#stars').textContent = '0'; resetCity();
-  playStage(0);
+  const got = stars - starsAt, secs = Math.round((clock() - stageT0) / 1000);
+  const time = `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}`;
+  $('#endEye').textContent = last ? 'Construction complete' : `Game ${i + 1} of ${STAGES.length} complete`;
+  $('#endH').innerHTML = last ? 'Your city is <span>finished!</span>' : 'Well <span>done!</span>';
+  $('#endTxt').textContent = last
+    ? `You built ${cityCount} buildings and earned ${stars} stars. Great work, architect!`
+    : `You finished “${STAGES[i].name}”. Next up: ${STAGES[i + 1].name}.`;
+  $('#endStats').innerHTML = [[got, 'Stars this game'], [stars, 'Total stars'], [time, 'Time']]
+    .map(([v, l]) => `<div class="stat"><b>${v}</b><span>${l}</span></div>`).join('');
+  $('#endNext').style.display = last ? 'none' : '';
+  show('end'); confetti(); cheerSound();
+  const speech = `${last ? 'Your city is finished!' : 'Well done!'} You earned ${got} stars.`;
+  G.onRules = G.onRepeat = () => say(speech);
+  say(speech);
+  const pick = await waitEnd(my, last);
+  if (pick === null || my !== gen) return;
+  if (pick === 'next') playStage(i + 1);
+  else if (pick === 'again') playStage(i);
+  else goHome();
 }
-/* The game starts without the microphone: the teacher presses keys (or the buttons)
-   for the child. L switches the microphone on for children in the same room. */
+// the success screen waits for a button (the teacher clicks), Space or Return
+function waitEnd(my, last) {
+  return new Promise(res => {
+    let iv;
+    const done = v => {
+      clearInterval(iv); endPick = null;
+      if (my === gen) G.onEnter = G.onRules = G.onRepeat = null;
+      res(v);
+    };
+    endPick = done;
+    G.onEnter = () => done(last ? 'again' : 'next');
+    iv = setInterval(() => { if (my !== gen) done(null); }, 300);
+  });
+}
+$('#sc-end').addEventListener('click', e => { const b = e.target.closest('[data-end]'); if (b && endPick) { b.blur(); unlockVoice(); endPick(b.dataset.end); } });
+/* Browsers block sound until the first key press or click, so the game unlocks speech and music on the first one. */
 let voiceUnlocked = false;
 function unlockVoice() {
-  if (voiceUnlocked) return;
-  voiceUnlocked = true;
-  if ('speechSynthesis' in window) speechSynthesis.speak(new SpeechSynthesisUtterance(''));
+  if (!voiceUnlocked) {
+    voiceUnlocked = true;
+    if ('speechSynthesis' in window) speechSynthesis.speak(new SpeechSynthesisUtterance(''));
+  }
+  syncMusic();
 }
-/* Two modes. Teacher control: no microphone, the teacher presses keys or clicks for the child.
-   Voice control: the microphone hears the child's claps and words (same room only). */
-function setMode(m) {
-  if (m === mode) return;
-  mode = m;
-  document.body.classList.toggle('mode-voice', m === 'voice');
-  document.body.classList.toggle('mode-teacher', m === 'teacher');
+/* background loop: TechnoByte by Yueki, CC0. Plays while the game is running and the sound is on. */
+const bgm = new Audio('music/TechnoByte_1.wav');
+bgm.loop = true;
+let musicVol = 0.25; // set with the Music volume slider in Settings
+bgm.volume = musicVol;
+let musicOff = true; // muted until the teacher turns it on
+function syncMusic() {
+  if (voiceUnlocked && !musicOff && !paused) bgm.play().catch(() => {}); else bgm.pause();
 }
-async function micOn() {
-  audioOn = true; ensureCtx(); Voice.init(); setEar();
-  if (!micReady) await initMic();
-  else { try { await connectMic(); micOk = true; } catch (e) { micOk = false; } }
-  setEar();
-  if (!micOk && mode === 'voice') { setMode('teacher'); toast('Microphone blocked: teacher control', 2500); }
+function toggleMusic() {
+  musicOff = !musicOff; syncMusic();
+  const b = $('#musicBtn'); b.classList.toggle('off', musicOff);
+  b.title = musicOff ? 'Music off' : 'Music on'; b.setAttribute('aria-label', b.title);
 }
-function micOff() {
-  audioOn = false; Voice.want = false; Voice.pause();
-  micStream?.getTracks().forEach(t => t.stop()); micStream = null;
-  micSrc?.disconnect(); micSrc = null;
-  setEar();
-}
-// the start screen: one card per game (the teacher clicks one, or the child says "let's build" for the first)
+// the start screen: one card per game (the teacher clicks one)
 function renderCards() {
-  $('#games').innerHTML = STAGES.map((st, i) => `<button type="button" class="game" data-stage="${i}"><span class="gnum">${i + 1}</span><b>${stName(st)}</b><span>${CARD[i]}</span></button>`).join('');
+  $('#games').innerHTML = STAGES.map((st, i) => `<button type="button" class="game" data-stage="${i}"><span class="gnum">${i + 1}</span><b>${st.name}</b><span>${CARD[i]}</span></button>`).join('');
 }
 async function intro() {
   const my = ++gen;
+  show('intro'); // the home screen has no city strip, so the "Your city will grow here…" hint stays hidden
   renderCards();
   G.onRules = G.onRepeat = () => say("Let's build a city! You are the architect today. Name the buildings, sort them into groups, and plan a new building. Let's go!");
-  if (await waitGo(my)) playStage(0); // Space / Return / "let's build" starts the first game
-}
-// switching mode from settings or with L: the microphone follows the mode, and a stage in progress restarts in the new mode
-async function changeMode(m) {
-  if (m === mode) return;
-  setMode(m);
-  if (m === 'voice') { toast('🎤 Voice control: allow the microphone', 2500); await micOn(); }
-  else { micOff(); toast('🧑‍🏫 Teacher control'); }
-  if (curStage !== null) playStage(curStage);
-  renderCards(); refreshSettings();
+  if (await waitGo(my)) playStage(0); // Space or Return starts the first game
 }
 /* ---------- settings ---------- */
 let settingsPaused = false;
@@ -1170,81 +1011,51 @@ function closeSettings() {
   if (settingsPaused) { settingsPaused = false; setPause(false); }
 }
 function refreshSettings() {
-  $('#swVoice').setAttribute('aria-checked', mode === 'voice');
   $('#swSound').setAttribute('aria-checked', !muted);
   $('#volRange').value = vol;
-  $('#sensRange').value = -Math.log2(sens);
-  $('#paceRange').value = pace;
-  $('#micTxt').textContent = micOk === null ? 'Not asked yet'
-    : micOk === false ? (micErr === 'NotFoundError' ? 'No microphone found on this computer.' : 'Blocked. Allow the microphone for this page in the browser, then press the button again.')
-    : audioOn ? 'Allowed and on' : 'Allowed · on when voice control is on';
+  $('#musicRange').value = musicVol;
 }
-// the button asks the browser itself (its permission prompt); the stream is released at once and voice control opens it again later
-let micErr = '';
-async function allowMic() {
-  unlockVoice();
-  $('#micTxt').textContent = 'Asking the browser…';
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    stream.getTracks().forEach(t => t.stop());
-    micOk = true; micErr = '';
-  } catch (e) {
-    micOk = false; micErr = e.name;
-  }
-  refreshSettings();
-}
-// show the permission the browser already remembers for this page
-navigator.permissions?.query({ name: 'microphone' }).then(p => {
-  if (p.state === 'granted') micOk = true;
-  else if (p.state === 'denied') micOk = false;
-  refreshSettings();
-}).catch(() => {});
 function setPause(on, quiet) {
   if (on === paused) return;
   if (on) { paused = true; pauseT0 = Date.now(); hush(); }
   else { pausedMs += Date.now() - pauseT0; paused = false; }
   document.body.classList.toggle('paused', paused);
+  syncMusic();
   $('#pause').hidden = !paused;
   const b = $('#pauseBtn'); b.title = paused ? 'Carry on' : 'Pause'; b.setAttribute('aria-label', b.title); b.classList.toggle('on', paused);
   if (quiet) return;
-  toast(paused ? '⏸ Paused' : '▶ Carry on');
   if (!paused) G.onResume?.();
 }
 // Home goes back to the start screen and clears the city; with progress on the board it asks for a second press
-let homeAsk = 0;
+// (the Home button on the success screen passes force, since the child has just finished)
 function goHome() {
-  if ((stars || cityCount) && Date.now() - homeAsk > 3000) { homeAsk = Date.now(); toast('Press Home again to start over', 3000); return; }
-  homeAsk = 0;
   setPause(false, true);
   gen++; hush();
   for (const k of Object.keys(G)) G[k] = null;
-  stars = 0; $('#stars').textContent = '0'; resetCity();
-  show('intro'); toast('🏠 Home');
+  show('intro'); // the score and the city are kept; only Reset score clears them
   intro();
 }
-setMode('teacher');
+function resetScore() {
+  stars = 0; $('#stars').textContent = '0'; resetCity();
+  fb('#wFb', '');
+}
 intro();
 
 /* ---------- teacher controls (keys and buttons do the same things) ---------- */
 const ACT = {
-  clap: () => isT() ? G.onEnter?.() : fireClap(), // teacher control has no claps: Space only starts
-  ok: () => {
-    if (!G.onEnter) { if (!isT()) fireClap(); return; }
-    const question = !!G.onSkip; // on start screens Return just starts
-    G.onEnter();
-    if (question) toast('✓ Correct');
-  },
-  skip: () => { if (G.onSkip) { G.onSkip(); toast('Skipped'); } },
+  ok: () => G.onEnter?.(),
+  skip: () => { if (G.onSkip) G.onSkip(); },
   hint: () => G.onHint?.(),
   repeat: () => G.onRepeat?.(),
   rules: () => G.onRules?.(),
+  music: () => toggleMusic(),
   pause: () => setPause(!paused),
   home: () => goHome(),
   settings: () => openSettings()
 };
 function teacher(name) {
   unlockVoice(); if (ac) ensureCtx();
-  if (paused && !['pause', 'home', 'settings'].includes(name)) { toast('Paused · press P to carry on'); return; }
+  if (paused && !['pause', 'home', 'settings', 'music'].includes(name)) return;
   ACT[name]();
 }
 document.addEventListener('keydown', e => {
@@ -1252,8 +1063,7 @@ document.addEventListener('keydown', e => {
   if (e.target.tagName === 'BUTTON') e.target.blur();
   const k = e.key;
   if (!$('#settings').hidden) { if (k === 'Escape' || k === '?' || k === '/') closeSettings(); return; } // the settings panel holds the keys still
-  if (k === ' ' || k === 'Spacebar' || k === 'c' || k === 'C') { e.preventDefault(); teacher('clap'); return; }
-  if (k === 'Enter' || k === 'Return' || k === 'y' || k === 'Y') { e.preventDefault(); teacher('ok'); return; }
+  if (k === ' ' || k === 'Spacebar' || k === 'c' || k === 'C' || k === 'Enter' || k === 'Return' || k === 'y' || k === 'Y') { e.preventDefault(); teacher('ok'); return; }
   unlockVoice();
   if (k === 'ArrowRight') teacher('skip');
   else if (k === 'h' || k === 'H') teacher('hint');
@@ -1261,30 +1071,57 @@ document.addEventListener('keydown', e => {
   else if (k === 'p' || k === 'P') teacher('pause');
   else if (k === '0') teacher('home');
   else if (/^[1-4]$/.test(k)) playStage(+k - 1);
-  else if (k === 'l' || k === 'L') changeMode(mode === 'voice' ? 'teacher' : 'voice');
-  else if (k === '[') { sens = Math.min(4, sens * 1.25); toast('Clap meter: less sensitive'); }
-  else if (k === ']') { sens = Math.max(.25, sens / 1.25); toast('Clap meter: more sensitive'); }
-  else if (k === '-') { pace = Math.min(2.5, pace * 1.25); toast('Clap rounds: slower'); }
-  else if (k === '=' || k === '+') { pace = Math.max(.5, pace / 1.25); toast('Clap rounds: faster'); }
-  else if (k === 'm' || k === 'M') { muted = !muted; if (muted) hush(); toast(muted ? 'Game voice off' : 'Game voice on'); }
+  else if (k === 'm' || k === 'M') { muted = !muted; if (muted) hush(); }
   else if (k === '?' || k === '/') openSettings();
 });
-document.querySelectorAll('[data-act]').forEach(b => b.addEventListener('click', e => { e.currentTarget.blur(); teacher(b.dataset.act); }));
+document.querySelectorAll('[data-act]:not(.tool)').forEach(b => b.addEventListener('click', e => { e.currentTarget.blur(); teacher(b.dataset.act); }));
+// a soft click for every tap on a button, answer, step, card or stage
+window.addEventListener('pointerdown', e => { if (e.target.closest('button, .choice, .step, .chip, .slot, .pcard, .game')) clickSound(); });
+// the round buttons on the left act without the on-screen badges
+document.querySelectorAll('.tool').forEach(b => b.addEventListener('click', e => { e.currentTarget.blur(); teacher(b.dataset.act); }));
 $('#pause').addEventListener('click', () => teacher('pause'));
+$('#resetScore').addEventListener('click', e => { e.currentTarget.blur(); resetScore(); });
 $('#games').addEventListener('click', e => { const g = e.target.closest('[data-stage]'); if (g) { g.blur(); unlockVoice(); playStage(+g.dataset.stage); } });
-$('#swVoice').addEventListener('click', e => { e.currentTarget.blur(); unlockVoice(); changeMode(mode === 'voice' ? 'teacher' : 'voice'); });
 $('#swSound').addEventListener('click', e => { e.currentTarget.blur(); muted = !muted; if (muted) hush(); refreshSettings(); });
 $('#volRange').addEventListener('input', e => { vol = +e.target.value; });
-$('#sensRange').addEventListener('input', e => { sens = 2 ** -e.target.value; });
-$('#paceRange').addEventListener('input', e => { pace = +e.target.value; });
-$('#micBtn').addEventListener('click', e => { e.currentTarget.blur(); allowMic(); });
+$('#musicRange').addEventListener('input', e => { musicVol = +e.target.value; bgm.volume = musicVol; });
 $('#setClose').addEventListener('click', closeSettings);
 $('#settings').addEventListener('click', e => { if (e.target.id === 'settings') closeSettings(); });
 // the teacher can click things on screen for the child
-const tap = fn => e => { unlockVoice(); if (paused) { toast('Paused · press P to carry on'); return; } fn(e); };
+const tap = fn => e => { unlockVoice(); if (paused) return; fn(e); };
 $('#wPlate').addEventListener('click', tap(e => { const c = e.target.closest('.chip'); if (c && !c.classList.contains('used')) G.onChip?.(c.dataset.w); }));
-$('#pPool').addEventListener('click', tap(e => { const s = e.target.closest('.step'); if (s && !s.classList.contains('placed')) G.onPick?.(+s.dataset.i); }));
-$('#cCard').addEventListener('click', tap(() => fireClap()));
+/* the teacher drags a step onto the track; the stage checks the order. Clicking a step does nothing. */
+let dragStep = null;
+$('#pPool').addEventListener('pointerdown', e => {
+  const s = e.target.closest('.step');
+  if (!s || s.classList.contains('placed') || e.button !== 0) return;
+  dragStep = { el: s, x: e.clientX, y: e.clientY, ghost: null };
+});
+window.addEventListener('pointermove', e => {
+  const d = dragStep;
+  if (!d) return;
+  if (!d.ghost) {
+    if (Math.hypot(e.clientX - d.x, e.clientY - d.y) < 6) return;
+    d.ghost = d.el.cloneNode(true);
+    d.ghost.classList.add('drag-ghost');
+    d.ghost.style.width = d.el.offsetWidth + 'px';
+    document.body.appendChild(d.ghost);
+    d.el.classList.add('dragging');
+  }
+  d.ghost.style.left = e.clientX + 'px'; d.ghost.style.top = e.clientY + 'px';
+  document.querySelectorAll('.slot.over').forEach(s => s.classList.remove('over'));
+  document.elementFromPoint(e.clientX, e.clientY)?.closest('.slot')?.classList.add('over');
+});
+window.addEventListener('pointerup', e => {
+  const d = dragStep;
+  dragStep = null;
+  if (!d || !d.ghost) return;
+  d.ghost.remove(); d.el.classList.remove('dragging');
+  document.querySelectorAll('.slot.over').forEach(s => s.classList.remove('over'));
+  if (!paused && document.elementFromPoint(e.clientX, e.clientY)?.closest('.track')) G.onPick?.(+d.el.dataset.i);
+});
+$('#wNext').addEventListener('click', tap(e => { e.currentTarget.blur(); G.onEnter?.(); }));
+$('#sNext').addEventListener('click', tap(e => { e.currentTarget.blur(); G.onEnter?.(); }));
 $('#wChoices').addEventListener('click', tap(e => { const b = e.target.closest('.choice'); if (b) { b.blur(); G.onChip?.(b.dataset.w); } }));
 $('#sCats').addEventListener('click', tap(e => { const b = e.target.closest('.choice'); if (b) { b.blur(); G.onCat?.(b.dataset.c); } }));
 
