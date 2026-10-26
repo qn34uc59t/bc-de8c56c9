@@ -908,6 +908,7 @@ const CARD = [
 ];
 let curStage = null, stageT0 = 0, starsAt = 0, endPick = null;
 async function playStage(i) {
+  fitStage();
   setPause(false, true);
   const my = ++gen;
   hush();
@@ -1029,6 +1030,7 @@ function setPause(on, quiet) {
 // Home goes back to the start screen and clears the city; with progress on the board it asks for a second press
 // (the Home button on the success screen passes force, since the child has just finished)
 function goHome() {
+  fitStage();
   setPause(false, true);
   gen++; hush();
   for (const k of Object.keys(G)) G[k] = null;
@@ -1127,11 +1129,16 @@ $('#sCats').addEventListener('click', tap(e => { const b = e.target.closest('.ch
 
 // Fit the stage to whatever window the game is in (the ClassIn student frame can be a different size).
 function fitStage(){
-  const wide = innerWidth / innerHeight >= 1.2 && innerWidth > 760;
+  const vv = window.visualViewport;
+  const w = vv ? vv.width : innerWidth, h = vv ? vv.height : innerHeight;
+  const wide = w / h >= 1.2 && w > 760;
   document.documentElement.classList.toggle('fit', wide);
-  document.documentElement.style.setProperty('--fit', Math.min(innerWidth / 1280, innerHeight / 800));
+  document.documentElement.style.setProperty('--fit', Math.min(w / 1280, h / 800));
 }
+// Re-measure on every kind of size change, including when the host frame resizes without a window resize.
 addEventListener('resize', fitStage);
+window.visualViewport?.addEventListener('resize', fitStage);
+if (window.ResizeObserver) new ResizeObserver(fitStage).observe(document.documentElement);
 fitStage();
 </script>
 </body>
